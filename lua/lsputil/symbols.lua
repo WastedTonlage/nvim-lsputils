@@ -37,7 +37,7 @@ local keymaps = {
 local function createOpts()
   local opts = {
     mode = 'split',
-    height = 24,
+    height = 12,
     keymaps = keymaps,
     close_on_bufleave = true,
     callbacks = {
