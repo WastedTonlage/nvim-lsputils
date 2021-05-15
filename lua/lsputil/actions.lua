@@ -7,27 +7,27 @@ local api = vim.api
 function M.close_selected_handler(index, command)
     M.popup = nil
     if index == nil then
-	M.items = nil
-	return
+        M.items = nil
+        return
     end
     local item = M.items[index]
     local location = {
-	uri = 'file://'..item.filename,
-	range = {
-	    start = {
-		line = item.lnum - 1,
-		--TODO: robust character column
-		character = item.col
-	    }
-	}
+        uri = 'file://'..item.filename,
+        range = {
+            start = {
+                line = item.lnum - 1,
+                --TODO: robust character column
+                character = item.col
+            }
+        }
     }
     if command == nil then
     elseif command == 'vsp' then
-	vim.cmd('vsp')
+        vim.cmd('vsp')
     elseif command == 'sp' then
-	vim.cmd('sp')
+        vim.cmd('sp')
     elseif command == 'tab' then
-	local buffer = api.nvim_get_current_buf()
+        local buffer = api.nvim_get_current_buf()
         vim.cmd(string.format(":tab sb %d", buffer))
     end
     vim.lsp.util.jump_to_location(location)
@@ -43,11 +43,11 @@ function M.selection_handler(index)
     local item = M.items[index]
     local startPoint = item.lnum - 3
     if startPoint <= 0 then
-	startPoint = item.lnum
+        startPoint = item.lnum
     end
     local cmd = string.format('bat %s --color=always --paging=always --plain -n --pager=\'less -RS\' -H %s -r %s:', item.filename, item.lnum, startPoint)
     return {
-	cmd = cmd
+        cmd = cmd
     }
 end
 
@@ -101,36 +101,36 @@ end
 function M.codeaction_selection_handler(index)
     M.popup = nil
     if index == nil then
-	M.actionBuffer = nil
-	return
+        M.actionBuffer = nil
+        return
     end
     local action = M.actionBuffer[index]
     if action.edit or type(action.command) == "table" then
-	if action.edit then
-	    vim.lsp.util.apply_workspace_edit(action.edit)
-	end
-	if type(action.command) == "table" then
-	    vim.lsp.buf.execute_command(action.command)
-	end
+        if action.edit then
+            vim.lsp.util.apply_workspace_edit(action.edit)
+        end
+        if type(action.command) == "table" then
+            vim.lsp.buf.execute_command(action.command)
+        end
     else
-	vim.lsp.buf.execute_command(action)
+        vim.lsp.buf.execute_command(action)
     end
     M.actionBuffer = nil
 end
 
 function M.customSelectionAction(customFunction)
-  return function(popup)
-    popup:close(function(index)
-      M.popup = nil
-      if index == nil then
-        M.actionBuffer = nil
-        return
-      end
-      local action = M.actionBuffer[index]
-      customFunction(action)
-      M.actionBuffer = nil
-    end)
-  end
+    return function(popup)
+        popup:close(function(index)
+            M.popup = nil
+            if index == nil then
+                M.actionBuffer = nil
+                return
+            end
+            local action = M.actionBuffer[index]
+            customFunction(action)
+            M.actionBuffer = nil
+        end)
+    end
 end
 
 
